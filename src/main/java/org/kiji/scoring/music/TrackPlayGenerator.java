@@ -16,7 +16,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.kiji.scoring.music;
 
 import java.io.IOException;
@@ -160,8 +159,9 @@ public final class TrackPlayGenerator extends Thread {
 
   /**
    * Create a record a track play of this specified song for a random user.
-   * @param song
-   * @throws IOException
+   *
+   * @param song the songId to play for a random user.
+   * @throws IOException in case of an error writing to the table.
    */
   public void generateRandomTrackPlayOfSong(String song) throws IOException {
     recordTrackPlay(getRandomUser(), song);

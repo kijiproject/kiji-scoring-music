@@ -1,3 +1,21 @@
+/**
+ * (c) Copyright 2013 WibiData, Inc.
+ *
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.kiji.scoring.music;
 
 import java.util.List;
@@ -13,8 +31,8 @@ import org.kiji.schema.KijiTable;
 import org.kiji.schema.KijiURI;
 import org.kiji.schema.tools.BaseTool;
 import org.kiji.scoring.FreshKijiTableReader;
-import org.kiji.scoring.FreshKijiTableReaderBuilder;
 
+/** CLI for writing track plays and reading recommendations. */
 public class ScoringMusicTool extends BaseTool {
 
   @Flag(name="kiji", usage="the KijiURI of the kiji music tutorial instance.")
@@ -67,13 +85,8 @@ public class ScoringMusicTool extends BaseTool {
     if (userFlag.startsWith("user-")) {
       try {
         final int userId = Integer.valueOf(userFlag.substring(5));
-        if (userId >= 0 && userId < 50) {
-          // Number is in legal range and the flag starts with "user-" so it is a legal username.
-          return true;
-        } else {
-          // Number is outside of legal range.
-          return false;
-        }
+        // Check that the id is within the legal range.
+        return userId >= 0 && userId < 50;
       } catch (NumberFormatException nfe) {
         // Not a valid number means not a value user.
         return false;
@@ -92,7 +105,7 @@ public class ScoringMusicTool extends BaseTool {
         + "BentoBox, this URI should be in the environment variable $KIJI");
     mURI = KijiURI.newBuilder(mURIFlag).build();
     Preconditions.checkArgument(
-        mWriteAllFlag || ! mWriteUserFlag.isEmpty() || !mFreshenUserFlag.isEmpty(),
+        mWriteAllFlag || !mWriteUserFlag.isEmpty() || !mFreshenUserFlag.isEmpty(),
         "Please specify at least one of --write-all, --write-user, or --freshen-user.");
     if (!mWriteUserFlag.isEmpty()) {
       Preconditions.checkArgument(isValidUser(mWriteUserFlag), String.format(
@@ -121,7 +134,7 @@ public class ScoringMusicTool extends BaseTool {
       try {
         final KijiTable table = kiji.openTable("user");
         try {
-          final FreshKijiTableReader freshReader = FreshKijiTableReaderBuilder.create()
+          final FreshKijiTableReader freshReader = FreshKijiTableReader.Builder.create()
               .withTable(table)
               .withTimeout(500)
               .build();
