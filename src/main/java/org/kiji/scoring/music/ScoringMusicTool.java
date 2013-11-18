@@ -36,20 +36,20 @@ import org.kiji.scoring.FreshKijiTableReader;
 public class ScoringMusicTool extends BaseTool {
 
   @Flag(name="kiji", usage="the KijiURI of the kiji music tutorial instance.")
-  private String mURIFlag = "";
+  private String mURIFlag = null;
 
   @Flag(name="write-user", usage="specify the user for which to generate a new random track play. "
       + "user names are of the format 'user-#' where # is a value between 0 and 49 inclusive with "
       + "no leading zero.")
-  private String mWriteUserFlag = "";
+  private String mWriteUserFlag = null;
 
   @Flag(name="write-all", usage="Generate a new random track play for all users.")
-  private boolean mWriteAllFlag;
+  private Boolean mWriteAllFlag = null;
 
   @Flag(name="freshen-user", usage="specify the user for which to perform a freshened read request."
       + " User names are of the format 'user-#' where # is a value between 0 and 49 inclusive with "
-      + "no leading zero. If specificed with a writing flag, this command will be executed last.")
-  private String mFreshenUserFlag = "";
+      + "no leading zero. If specified with a writing flag, this command will be executed last.")
+  private String mFreshenUserFlag = null;
 
   /** The KijiURI built from the mURIFlag. */
   private KijiURI mURI;
@@ -100,19 +100,21 @@ public class ScoringMusicTool extends BaseTool {
   /** {@inheritDoc} */
   @Override
   protected void validateFlags() {
-    Preconditions.checkArgument(!mURIFlag.isEmpty(),
+    Preconditions.checkArgument(null != mURIFlag && !mURIFlag.isEmpty(),
         "Please specify the KijiURI of the music tutorial instance. If running the tutorial in the "
         + "BentoBox, this URI should be in the environment variable $KIJI");
     mURI = KijiURI.newBuilder(mURIFlag).build();
     Preconditions.checkArgument(
-        mWriteAllFlag || !mWriteUserFlag.isEmpty() || !mFreshenUserFlag.isEmpty(),
+        (null != mWriteAllFlag && mWriteAllFlag)
+        || (null != mWriteUserFlag && !mWriteUserFlag.isEmpty())
+        || (null != mFreshenUserFlag && !mFreshenUserFlag.isEmpty()),
         "Please specify at least one of --write-all, --write-user, or --freshen-user.");
-    if (!mWriteUserFlag.isEmpty()) {
+    if (null != mWriteUserFlag && !mWriteUserFlag.isEmpty()) {
       Preconditions.checkArgument(isValidUser(mWriteUserFlag), String.format(
           "Specified user: '%s' is invalid. A user name must follow the format 'user-#' where # is "
           + "a value between 0 and 49 inclusive with no leading zero.", mWriteUserFlag));
     }
-    if (!mFreshenUserFlag.isEmpty()) {
+    if (null != mFreshenUserFlag && !mFreshenUserFlag.isEmpty()) {
       Preconditions.checkArgument(isValidUser(mFreshenUserFlag), String.format(
           "Specified user: '%s' is invalid. A user name must follow the format 'user-#' where # is "
               + "a value between 0 and 49 inclusive with no leading zero.", mFreshenUserFlag));
@@ -126,17 +128,17 @@ public class ScoringMusicTool extends BaseTool {
     if (mWriteAllFlag) {
       generator.generateRandomTrackPlayForAll();
     }
-    if (!mWriteUserFlag.isEmpty()) {
+    if (null != mWriteUserFlag) {
       generator.generateRandomTrackPlayForUser(mWriteUserFlag);
     }
-    if (!mFreshenUserFlag.isEmpty()) {
+    if (null != mFreshenUserFlag) {
       final Kiji kiji = Kiji.Factory.open(mURI);
       try {
         final KijiTable table = kiji.openTable("user");
         try {
           final FreshKijiTableReader freshReader = FreshKijiTableReader.Builder.create()
               .withTable(table)
-              .withTimeout(500)
+              .withTimeout(1000)
               .build();
           try {
             final EntityId eid = table.getEntityId(mFreshenUserFlag);

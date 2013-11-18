@@ -90,6 +90,15 @@ public final class TrackPlayGenerator extends Thread {
   }
 
   /**
+   * Create a new random id between 0 and 49 inclusive.
+   *
+   * @return a new random id between 0 and 49 inclusive.
+   */
+  private static int randomId() {
+    return RANDOM.nextInt(50);
+  }
+
+  /**
    * Format a new user name from a given integer id.  Ids may be between 0 and 49 inclusive.
    *
    * @param id the id of the user.
@@ -115,7 +124,7 @@ public final class TrackPlayGenerator extends Thread {
    * @return a randomly selected user from our user list.
    */
   private static String getRandomUser() {
-    return getUserForId(RANDOM.nextInt(50));
+    return getUserForId(randomId());
   }
 
   /**
@@ -124,7 +133,7 @@ public final class TrackPlayGenerator extends Thread {
    * @return a randomly selected song from our library.
    */
   private static String getRandomSong() {
-    return getSongForId(RANDOM.nextInt(50));
+    return getSongForId(randomId());
   }
 
   /**

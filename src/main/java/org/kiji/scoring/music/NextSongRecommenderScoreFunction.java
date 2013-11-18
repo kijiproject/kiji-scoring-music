@@ -51,9 +51,15 @@ public class NextSongRecommenderScoreFunction extends ScoreFunction<String> {
   /** Parameter key which hold the name of the column from which recommendations are read. */
   public static final String KEY_VALUE_STORE_COLUMN_PARAMETER_KEY =
       "org.kiji.scoring.music.NextSongRecommenderScoreFunction.kvstore_column";
+  /**
+   * Data request for the track play history of the user. This combined with the KeyValueStore is
+   * enough to produce a new recommendation.
+   */
+  private static final KijiDataRequest REQUEST = KijiDataRequest.create("info", "track_plays");
 
   // One time setup methods ------------------------------------------------------------------------
 
+  /** {@inheritDoc} */
   @Override
   public Map<String, KeyValueStore<?, ?>> getRequiredStores(
       final FreshenerGetStoresContext context
@@ -74,12 +80,14 @@ public class NextSongRecommenderScoreFunction extends ScoreFunction<String> {
 
   // Per-request methods ---------------------------------------------------------------------------
 
+  /** {@inheritDoc} */
   @Override
   public KijiDataRequest getDataRequest(final FreshenerContext context) throws IOException {
     // Get just the user's most recent track play.
-    return KijiDataRequest.create("info", "track_plays");
+    return REQUEST;
   }
 
+  /** {@inheritDoc} */
   @Override
   public TimestampedValue<String> score(
       final KijiRowData dataToScore, final FreshenerContext context
