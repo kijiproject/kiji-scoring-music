@@ -9,17 +9,16 @@
   <parent>
     <groupId>org.kiji.pom</groupId>
     <artifactId>root-pom</artifactId>
-    <version>1.1.3</version>
+    <version>1.1.7</version>
   </parent>
 
   <properties>
-    <kiji-delegation.version>1.0.0</kiji-delegation.version>
-    <kiji-platforms.version>1.1.0</kiji-platforms.version>
-    <kiji-schema.version>1.3.2</kiji-schema.version>
-    <kiji-mapreduce.version>1.0.0</kiji-mapreduce.version>
-    <kiji-music.version>${kiji-mapreduce.version}</kiji-music.version>
-    <kiji-scoring.version>0.8.0</kiji-scoring.version>
-    <fake-hbase.version>0.1.0</fake-hbase.version>
+    <kiji-platforms.version>1.3.0</kiji-platforms.version>
+    <kiji-schema.version>1.4.2</kiji-schema.version>
+    <kiji-mapreduce.version>1.2.8</kiji-mapreduce.version>
+    <kiji-music.version>1.1.6</kiji-music.version>
+    <kiji-scoring.version>0.15.0</kiji-scoring.version>
+    <fake-hbase.version>0.1.5</fake-hbase.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -132,6 +131,10 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.curator</groupId>
+      <artifactId>curator-test</artifactId>
     </dependency>
   </dependencies>
 
