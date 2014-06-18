@@ -26,7 +26,6 @@ import org.kiji.common.flags.Flag;
 import org.kiji.schema.EntityId;
 import org.kiji.schema.Kiji;
 import org.kiji.schema.KijiDataRequest;
-import org.kiji.schema.KijiRowData;
 import org.kiji.schema.KijiTable;
 import org.kiji.schema.KijiURI;
 import org.kiji.schema.tools.BaseTool;
@@ -125,7 +124,7 @@ public class ScoringMusicTool extends BaseTool {
   @Override
   protected int run(final List<String> nonFlagArgs) throws Exception {
     final TrackPlayGenerator generator = new TrackPlayGenerator(mURI, 10);
-    if (mWriteAllFlag) {
+    if ((null != mWriteAllFlag) && mWriteAllFlag) {
       generator.generateRandomTrackPlayForAll();
     }
     if (null != mWriteUserFlag) {
@@ -134,7 +133,7 @@ public class ScoringMusicTool extends BaseTool {
     if (null != mFreshenUserFlag) {
       final Kiji kiji = Kiji.Factory.open(mURI);
       try {
-        final KijiTable table = kiji.openTable("user");
+        final KijiTable table = kiji.openTable("users");
         try {
           final FreshKijiTableReader freshReader = FreshKijiTableReader.Builder.create()
               .withTable(table)
@@ -143,8 +142,10 @@ public class ScoringMusicTool extends BaseTool {
           try {
             final EntityId eid = table.getEntityId(mFreshenUserFlag);
             final KijiDataRequest request = KijiDataRequest.create("info", "next_song_rec");
-            final KijiRowData freshRecommendation =
-                freshReader.get(eid, request).getMostRecentValue("info", "next_song_rec");
+            final String freshRecommendation = freshReader
+                .get(eid, request)
+                .getMostRecentValue("info", "next_song_rec")
+                .toString();
             getPrintStream().println(String.format(
                 "Fresh recommendation for user '%s' is '%s'",
                 mFreshenUserFlag, freshRecommendation));
